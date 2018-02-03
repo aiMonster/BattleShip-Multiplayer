@@ -1,4 +1,5 @@
-﻿using Common.DTO;
+﻿using Client;
+using Common.DTO;
 using Common.DTO.Requests;
 using Common.Enums;
 using System;
@@ -11,7 +12,7 @@ namespace ConsoleClient.SocketClient
 {
     public partial class BattleSocketClient
     {
-        private void StartGame()
+        private async Task StartGame()
         {
             Console.WriteLine("Enter 1 to play with random player and 2 to play with your friend and 3 to go away");
             int answer = 0;
@@ -53,6 +54,31 @@ namespace ConsoleClient.SocketClient
             {
                 Console.WriteLine("You are going away! Just close app!");
             }
+        }
+
+        private async Task PutShips()
+        {
+            await Game.FillField();
+            await Game.ShowFields();
+            SendMessage(new BaseMessage(NotificationTypes.ShipsPlaced));
+        }
+
+        private async Task MakeMove()
+        {
+            Console.WriteLine("enter x: ");
+            MoveCoordinates coordinates = new MoveCoordinates(NotificationTypes.MoveMade);
+            coordinates.X = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("enter y: ");
+            coordinates.Y = Convert.ToInt32(Console.ReadLine());
+            SendMessage(coordinates);
+            //return coordinates;
+        }
+
+        private async Task CheckMove(MoveCoordinates coordinates)
+        {
+            var result = await Game.CheckShot(coordinates);
+
         }
 
         private void GameCreated(GameWithFriendRequest game)

@@ -9,16 +9,18 @@ using System.Text;
 using System.Threading.Tasks;
 using WebSocket4Net;
 
+
 namespace ConsoleClient.SocketClient
 {
     public partial class BattleSocketClient
     {       
-        private void websocketClient_MessageReceived(object sender, MessageReceivedEventArgs e)
+        private async void websocketClient_MessageReceived(object sender, MessageReceivedEventArgs e)
         {            
             var baseMessage = JsonConvert.DeserializeObject<BaseMessage>(e.Message);
             if (baseMessage.Type == NotificationTypes.WatingForShips)
             {                
-                Console.WriteLine("Waiting for ships");                
+                Console.WriteLine("Waiting for ships");
+                await PutShips();
             }
             else if(baseMessage.Type == NotificationTypes.GameCreated)
             {
@@ -28,7 +30,22 @@ namespace ConsoleClient.SocketClient
             else if(baseMessage.Type == NotificationTypes.GameNotFound || baseMessage.Type == NotificationTypes.GamePasswordNotValid)
             {
                 Console.WriteLine("Game not found or password not valid");
-                StartGame();
+                await StartGame();
+            }
+            else if(baseMessage.Type == NotificationTypes.OpponentSurrended)
+            {
+                var date = DateTime.Now;
+                Console.WriteLine("Opponent surrended at " + date + " now - " + DateTime.Now);                
+                await StartGame();
+            }
+            else if(baseMessage.Type == NotificationTypes.YourMove)
+            {
+                Console.WriteLine("Making move");
+                await MakeMove();
+            }
+            else if(baseMessage.Type == NotificationTypes.MoveMade)
+            {
+               await CheckMove(JsonConvert.DeserializeObject<MoveCoordinates>(e.Message));
             }
         }
 
@@ -39,10 +56,10 @@ namespace ConsoleClient.SocketClient
             webSocketClient.Send(JsonConvert.SerializeObject(message));                     
         }
         
-        private void websocketClient_Opened(object sender, EventArgs e)
+        private async void websocketClient_Opened(object sender, EventArgs e)
         {
             Console.WriteLine("Client successfully connected.");
-            StartGame();
+            await StartGame();
         }
 
         private void websocketClient_Error(object sender, SuperSocket.ClientEngine.ErrorEventArgs e)
