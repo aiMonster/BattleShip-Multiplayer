@@ -13,20 +13,20 @@ namespace Common.Enums
         ShipsPlaced,//       
 
         //to both
-        MoveMade,//to server - done// to client -
-        MoveChecked,//to server - done// to client -
+        MoveMade,//to server - done// to client - done
+        MoveChecked,//to server - done// to client - done
 
         //to client                
-        GameCreated,
-        GameNotFound,
-        WaitingForOpponentShips,
-        GamePasswordNotValid,
-        WatingForShips,       
-        OpponentSurrended,
-        Won,
-        Lost,
-        YourMove,
-        OpponentMove
+        GameCreated,//
+        GameNotFound,//
+        WaitingForOpponentShips,//
+        GamePasswordNotValid,//
+        WatingForShips,//       
+        OpponentSurrended,//
+        Won,//
+        Lost,//
+        YourMove,//
+        OpponentMove//
 
         
     }

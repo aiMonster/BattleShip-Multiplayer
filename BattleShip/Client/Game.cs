@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Client.Enums;
 using Client.Extensions;
 using Common.DTO;
+using Common.DTO.Requests;
+using Common.Enums;
 
 namespace Client
 {
@@ -14,6 +16,7 @@ namespace Client
         private const char freeCell = '~';
         private const char shipClell = 'O';
         private const char shotedCell = ' ';
+        private const char injuredCell = 'X';
 
 
         private static char[,] myField = new char[10,10];
@@ -22,23 +25,27 @@ namespace Client
         static Game()
         {           
             myField.Fill(freeCell);
-            opponentField.Fill(freeCell);
-            //await ShowFields();
+            opponentField.Fill(freeCell);            
         }
 
+        //will work but we don't check is it killed
         public static async Task<ShotResultTypes> CheckShot(MoveCoordinates coordinates)
         {
-            if(myField[coordinates.X, coordinates.Y] == freeCell)
+            if(myField[coordinates.Y, coordinates.X] == freeCell)
             {
+                myField[coordinates.Y, coordinates.X] = shotedCell;
                 return ShotResultTypes.MovePast;
             }            
-            else if(myField[coordinates.X, coordinates.Y] == shipClell)
+            else if(myField[coordinates.Y, coordinates.X] == shipClell)
             {
+                myField[coordinates.Y, coordinates.X] = injuredCell;
                 return ShotResultTypes.MoveInjured;
             }
+            myField[coordinates.Y, coordinates.X] = injuredCell;
             return ShotResultTypes.MovePast;
         }
 
+        //works only by yourself and only with one ship
         public static async Task FillField()
         {
             Console.WriteLine("Do you want to fill field by yourself(1) or by random(2)? -");
@@ -76,6 +83,23 @@ namespace Client
             Console.WriteLine("Filling by random:");
         }
 
+        //done but we don't say when it is killed
+        public static void MarkOurShot(ShotResult shot)
+        {
+            switch (shot.shotResult)
+            {
+                case ShotResultTypes.MoveInjured:
+                case ShotResultTypes.MoveKilled:
+                case ShotResultTypes.MoveFatal:
+                    opponentField[shot.Y, shot.X] = injuredCell;
+                    break;
+                case ShotResultTypes.MovePast:
+                    opponentField[shot.Y, shot.X] = freeCell;
+                    break;
+            }
+
+        }
+
         private static async Task PutShip(int length)
         {
             bool isOkay = false;
@@ -87,7 +111,7 @@ namespace Client
                 Console.WriteLine("Ener Y coordinate:");
                 int yCoordinate = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Ener direction:");
+                Console.WriteLine("Enter direction:");
                 DirectionTypes direction = (DirectionTypes)Convert.ToInt32(Console.ReadLine());
 
                 if(direction == DirectionTypes.Up)
@@ -96,7 +120,7 @@ namespace Client
 
                     for(int i = 0; i < length; i++)
                     {
-                        myField[xCoordinate, yCoordinate - i] = shipClell;
+                        myField[yCoordinate - i, xCoordinate] = shipClell;
                     }
                 }
                 else if(direction == DirectionTypes.Right)
@@ -105,7 +129,7 @@ namespace Client
 
                     for (int i = 0; i < length; i++)
                     {
-                        myField[xCoordinate + i, yCoordinate] = shipClell;
+                        myField[yCoordinate, xCoordinate + i] = shipClell;
                     }
                 }
                 else if(direction == DirectionTypes.Down)
@@ -114,7 +138,7 @@ namespace Client
 
                     for (int i = 0; i < length; i++)
                     {
-                        myField[xCoordinate, yCoordinate + i] = shipClell;
+                        myField[yCoordinate + i, xCoordinate] = shipClell;
                     }
                 }
                 else if(direction == DirectionTypes.Left)
@@ -127,7 +151,7 @@ namespace Client
 
                     for (int i = 0; i < length; i++)
                     {
-                        myField[xCoordinate - i, yCoordinate] = shipClell;
+                        myField[yCoordinate, xCoordinate - i] = shipClell;
                     }
                 }
                 isOkay = true;
@@ -139,11 +163,23 @@ namespace Client
 
         public static async Task ShowFields()
         {
+            Console.WriteLine("Your ships: ");
             for(int x = 0; x < 10; x++)
             {
                 for(int y = 0; y < 10; y++)
                 {
-                    Console.Write(myField[x,y]);
+                    Console.Write(myField[y,x]);
+                    Console.Write(' ');
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("Opponent ships: ");
+            for (int x = 0; x < 10; x++)
+            {
+                for (int y = 0; y < 10; y++)
+                {
+                    Console.Write(opponentField[y, x]);
                     Console.Write(' ');
                 }
                 Console.WriteLine();

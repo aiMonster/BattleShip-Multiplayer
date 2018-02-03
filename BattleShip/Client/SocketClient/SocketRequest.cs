@@ -12,6 +12,7 @@ namespace ConsoleClient.SocketClient
 {
     public partial class BattleSocketClient
     {
+        //done but need customization
         private async Task StartGame()
         {
             Console.WriteLine("Enter 1 to play with random player and 2 to play with your friend and 3 to go away");
@@ -63,6 +64,7 @@ namespace ConsoleClient.SocketClient
             SendMessage(new BaseMessage(NotificationTypes.ShipsPlaced));
         }
 
+        //done but need customization
         private async Task MakeMove()
         {
             Console.WriteLine("enter x: ");
@@ -71,19 +73,26 @@ namespace ConsoleClient.SocketClient
 
             Console.WriteLine("enter y: ");
             coordinates.Y = Convert.ToInt32(Console.ReadLine());
-            SendMessage(coordinates);
-            //return coordinates;
+            SendMessage(coordinates);            
         }
 
+        //looks to be done
         private async Task CheckMove(MoveCoordinates coordinates)
         {
             var result = await Game.CheckShot(coordinates);
-
+            SendMessage(new ShotResult(NotificationTypes.MoveChecked, coordinates) { shotResult = result });
         }
 
-        private void GameCreated(GameWithFriendRequest game)
+        //done but need customization
+        private async Task GameCreated(GameWithFriendRequest game)
         {
             Console.WriteLine("Id - " + game.GameId + ", password - " + game.Password);
+        }
+
+        //seems to be good
+        private async Task MoveChecked(ShotResult result)
+        {
+            Game.MarkOurShot(result);
         }
     }
 }

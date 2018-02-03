@@ -25,7 +25,7 @@ namespace ConsoleClient.SocketClient
             else if(baseMessage.Type == NotificationTypes.GameCreated)
             {
                 Console.WriteLine("GameCreated");
-                GameCreated(JsonConvert.DeserializeObject<GameWithFriendRequest>(e.Message));
+                await GameCreated(JsonConvert.DeserializeObject<GameWithFriendRequest>(e.Message));
             }
             else if(baseMessage.Type == NotificationTypes.GameNotFound || baseMessage.Type == NotificationTypes.GamePasswordNotValid)
             {
@@ -33,19 +33,40 @@ namespace ConsoleClient.SocketClient
                 await StartGame();
             }
             else if(baseMessage.Type == NotificationTypes.OpponentSurrended)
-            {
-                var date = DateTime.Now;
-                Console.WriteLine("Opponent surrended at " + date + " now - " + DateTime.Now);                
+            {                
+                Console.WriteLine("Opponent surrended");                
                 await StartGame();
+            }
+            else if(baseMessage.Type == NotificationTypes.WaitingForOpponentShips)
+            {
+                Console.WriteLine("Waiting when opponent will place his ships");
+            }
+            else if(baseMessage.Type == NotificationTypes.Won)
+            {
+                Console.WriteLine("Congratulations, you won");
+            }
+            else if(baseMessage.Type == NotificationTypes.Lost)
+            {
+                Console.WriteLine("Loser, you just lost!");
             }
             else if(baseMessage.Type == NotificationTypes.YourMove)
             {
                 Console.WriteLine("Making move");
                 await MakeMove();
             }
+            else if(baseMessage.Type == NotificationTypes.OpponentMove)
+            {
+                Console.WriteLine("Waiting while opponent will make his move");
+            }
             else if(baseMessage.Type == NotificationTypes.MoveMade)
             {
+                Console.WriteLine("we are checking opponent move");
                await CheckMove(JsonConvert.DeserializeObject<MoveCoordinates>(e.Message));
+            }
+            else if(baseMessage.Type == NotificationTypes.MoveChecked)
+            {
+                Console.WriteLine("Our move was checked");
+               await MoveChecked(JsonConvert.DeserializeObject<ShotResult>(e.Message));
             }
         }
 

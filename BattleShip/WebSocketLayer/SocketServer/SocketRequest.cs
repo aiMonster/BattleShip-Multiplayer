@@ -137,10 +137,13 @@ namespace WebSocketLayer.SocketServer
             }
             else if(shot.shotResult == ShotResultTypes.MoveFatal)
             {
+                _context.Games.Remove(game);
                 SendMessage(session.SessionID, new BaseMessage(NotificationTypes.Lost));
 
                 SendMessage(opponentId, new ShotResult(NotificationTypes.MoveChecked, shot));
                 SendMessage(opponentId, new BaseMessage(NotificationTypes.Won));
+
+                
             }
         }
 
