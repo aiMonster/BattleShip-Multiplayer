@@ -13,14 +13,14 @@ namespace Common.DTO.Requests
         public ShotResult(NotificationTypes type): base(type) { }
         public ShotResult(NotificationTypes type, MoveCoordinates coordinates) :base(type)
         {
-            X = coordinates.X;
-            Y = coordinates.Y;
+            A = coordinates.A;
+            B = coordinates.B;
         }
 
         public ShotResult(NotificationTypes type, ShotResult result) : base(type)
         {
-            X = result.X;
-            Y = result.Y;
+            A = result.A;
+            B = result.B;
             shotResult = result.shotResult;
         }
     }

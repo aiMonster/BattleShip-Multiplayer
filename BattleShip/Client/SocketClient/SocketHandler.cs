@@ -60,8 +60,8 @@ namespace ConsoleClient.SocketClient
             }
             else if(baseMessage.Type == NotificationTypes.MoveMade)
             {
-                Console.WriteLine("we are checking opponent move");
-               await CheckMove(JsonConvert.DeserializeObject<MoveCoordinates>(e.Message));
+                Console.WriteLine("we are checking opponent move");                
+                await CheckMove(JsonConvert.DeserializeObject<MoveCoordinates>(e.Message));
             }
             else if(baseMessage.Type == NotificationTypes.MoveChecked)
             {

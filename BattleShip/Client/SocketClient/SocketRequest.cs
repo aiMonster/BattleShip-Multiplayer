@@ -59,27 +59,27 @@ namespace ConsoleClient.SocketClient
 
         private async Task PutShips()
         {
-            await Game.FillField();
-            await Game.ShowFields();
+            await Field.FillField();            
             SendMessage(new BaseMessage(NotificationTypes.ShipsPlaced));
         }
 
         //done but need customization
         private async Task MakeMove()
         {
-            Console.WriteLine("enter x: ");
+            Field.ShowFields();
+            Console.WriteLine("enter a: ");
             MoveCoordinates coordinates = new MoveCoordinates(NotificationTypes.MoveMade);
-            coordinates.X = Convert.ToInt32(Console.ReadLine());
+            coordinates.A = Convert.ToInt32(Console.ReadLine()) + 4;
 
-            Console.WriteLine("enter y: ");
-            coordinates.Y = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("enter b: ");
+            coordinates.B = Convert.ToInt32(Console.ReadLine()) + 4;
             SendMessage(coordinates);            
         }
 
         //looks to be done
         private async Task CheckMove(MoveCoordinates coordinates)
         {
-            var result = await Game.CheckShot(coordinates);
+            var result = await Field.CheckShot(coordinates);
             SendMessage(new ShotResult(NotificationTypes.MoveChecked, coordinates) { shotResult = result });
         }
 
@@ -92,7 +92,7 @@ namespace ConsoleClient.SocketClient
         //seems to be good
         private async Task MoveChecked(ShotResult result)
         {
-            Game.MarkOurShot(result);
+            Field.MarkOurShot(result);
         }
     }
 }

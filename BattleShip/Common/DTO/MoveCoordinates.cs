@@ -7,8 +7,8 @@ namespace Common.DTO
 {
     public class MoveCoordinates : BaseMessage
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int A { get; set; }
+        public int B { get; set; }
 
         public MoveCoordinates() { }
 
@@ -19,8 +19,8 @@ namespace Common.DTO
 
         public MoveCoordinates(NotificationTypes type, MoveCoordinates coordinates) : base(type)
         {
-            X = coordinates.X;
-            Y = coordinates.Y;
+            A = coordinates.A;
+            B = coordinates.B;
         }
     }
 }
