@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Client.Enums;
 using Client.Extensions;
@@ -33,6 +34,9 @@ namespace Client
             if(myField[coordinates.A, coordinates.B] == waterCell)
             {
                 myField[coordinates.A, coordinates.B] = emptyCell;
+                Console.Clear();
+                ShowFields();
+                Console.WriteLine("Opponent moved past");
                 return ShotResultTypes.MovePast;
             }            
             else if(myField[coordinates.A, coordinates.B] == shipCell)
@@ -62,9 +66,9 @@ namespace Client
                 }
                 else if(wereWehere)
                 {
-                    response = ShotResultTypes.MoveKilled;
-                    wereWehere = false;
-                }                
+                    response = ShotResultTypes.MoveKilled;                    
+                }
+                wereWehere = false;
                 aliveCells = 0;
 
                 //checking 3 deck ships
@@ -90,11 +94,13 @@ namespace Client
                     else if (wereWehere)
                     {
                         response = ShotResultTypes.MoveKilled;
-                        wereWehere = false;
+                        
                     }
                     aliveCells = 0;
+                    wereWehere = false;
                 }
-               
+                
+
 
                 //checking 2 deck ships
                 for (int i = 0; i < 3; i++)
@@ -118,13 +124,14 @@ namespace Client
                     }
                     else if (wereWehere)
                     {
-                        response = ShotResultTypes.MoveKilled;
-                        wereWehere = false;
+                        response = ShotResultTypes.MoveKilled;                        
                     }
                     aliveCells = 0;
+                    wereWehere = false;
                 }
                 
-                
+
+
                 //checking 1 deck ships
                 for (int i = 0; i < 4; i++)
                 {
@@ -145,10 +152,10 @@ namespace Client
                     }
                     else if (wereWehere)
                     {
-                        response = ShotResultTypes.MoveKilled;
-                        wereWehere = false;
+                        response = ShotResultTypes.MoveKilled;                        
                     }
                     aliveCells = 0;
+                    wereWehere = false;
                 }
                 
 
@@ -159,6 +166,17 @@ namespace Client
                 }
                 else
                 {
+                    Console.Clear();
+                    ShowFields();
+
+                    if (response == ShotResultTypes.MoveKilled)
+                    {
+                        Console.WriteLine("Opponent just killed you");                        
+                    }
+                    else
+                    {
+                        Console.WriteLine("Opponent just injured you");
+                    }
                     return response;
                 }
                 
@@ -174,8 +192,7 @@ namespace Client
         {
             //reseting fields
             myField.Fill(shipCell, waterCell);
-            opponentField.Fill(shipCell, waterCell);
-            ShowFields();
+            opponentField.Fill(shipCell, waterCell);           
             FillingFieldTypes fillingType = FillingFieldTypes.Random;
 
             Console.WriteLine("Do you want to fill field by yourself(1) or by random(2)? -");
@@ -281,6 +298,10 @@ namespace Client
                 }
                 while (!isPutOk);
             }
+
+            Console.Clear();
+            Console.WriteLine(new string('=', 25));
+            ShowFields();
 
         }
 
@@ -459,6 +480,7 @@ namespace Client
 
         private static (DirectionTypes, int, int) TakeCoordinatesWithDirection(bool isItMoreThanOne = true)
         {
+            Console.Clear();
             Console.WriteLine(new string('=', 20));
             ShowMyField();
 
@@ -482,23 +504,27 @@ namespace Client
         //done but we don't surround when it is killed
         public static void MarkOurShot(ShotResult shot)
         {
+            string result = "";
             switch (shot.shotResult)
             {
                 case ShotResultTypes.MoveInjured:
-                    Console.WriteLine("You just injured me");
+                    result ="You just injured opponent";
                     goto case ShotResultTypes.MoveFatal;
                 case ShotResultTypes.MoveKilled:
-                    Console.WriteLine("You just killed me");
+                    result = "You just killed opponent";
                     goto case ShotResultTypes.MoveFatal;
                 case ShotResultTypes.MoveFatal:
                     opponentField[shot.A, shot.B] = deadShipCell;
                     break;
                 case ShotResultTypes.MovePast:
-                    Console.WriteLine("Your move was past by");
-                    opponentField[shot.A, shot.B] = waterCell;
+                   result = "Your move was past by";
+                    opponentField[shot.A, shot.B] = emptyCell;
                     break;
             }
-
+            Console.Clear();
+            ShowFields();
+            Console.WriteLine(result);
+            Thread.Sleep(1000);
         }
                
         public static void ShowMyField()
@@ -516,27 +542,41 @@ namespace Client
 
         public static void ShowFields()
         {
-            Console.WriteLine("Your ships: ");
-            for(int a = 0; a < 18; a++)
+            //Console.WriteLine("Your ships: ");
+            Console.WriteLine("\t  q w e r t y u i o p \t|\t  q w e r t y u i o p ");
+            for(int a = 4; a < 14; a++)
             {
-                for(int b = 0; b < 18; b++)
+                Console.Write("\t" + (a - 4) + " ");
+                for(int b = 4; b < 14; b++)
                 {
                     Console.Write(myField[a,b]);
                     Console.Write(' ');
                 }
-                Console.WriteLine();
-            }
-
-            Console.WriteLine("Opponent ships: ");
-            for (int a = 0; a < 18; a++)
-            {
-                for (int b = 0; b < 18; b++)
+                Console.Write("\t|\t"+ (a - 4) + " ");
+                for (int b = 4; b < 14; b++)
                 {
                     Console.Write(opponentField[a, b]);
                     Console.Write(' ');
                 }
                 Console.WriteLine();
             }
+
+            //Console.WriteLine("Opponent ships: ");
+            //for (int a = 4; a < 14; a++)
+            //{
+                
+            //    Console.WriteLine();
+            //}
+        }
+
+        public static bool DidWeShotHere(MoveCoordinates coordinates)
+        {
+            if(opponentField[coordinates.A, coordinates.B] == waterCell)
+            {
+                return false;
+            }
+            return true;
+
         }
     }
 }

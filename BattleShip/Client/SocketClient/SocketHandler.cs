@@ -19,53 +19,59 @@ namespace ConsoleClient.SocketClient
             var baseMessage = JsonConvert.DeserializeObject<BaseMessage>(e.Message);
             if (baseMessage.Type == NotificationTypes.WatingForShips)
             {                
-                Console.WriteLine("Waiting for ships");
+                //Console.WriteLine("Waiting for ships");
                 await PutShips();
             }
             else if(baseMessage.Type == NotificationTypes.GameCreated)
             {
-                Console.WriteLine("GameCreated");
+                //Console.WriteLine("GameCreated");
                 await GameCreated(JsonConvert.DeserializeObject<GameWithFriendRequest>(e.Message));
             }
             else if(baseMessage.Type == NotificationTypes.GameNotFound || baseMessage.Type == NotificationTypes.GamePasswordNotValid)
             {
-                Console.WriteLine("Game not found or password not valid");
+                Console.WriteLine(new string('=', 25));
+                Console.WriteLine("Game was not found or password not valid!");
                 await StartGame();
             }
             else if(baseMessage.Type == NotificationTypes.OpponentSurrended)
-            {                
-                Console.WriteLine("Opponent surrended");                
+            {
+                Console.WriteLine(new string('=', 25));
+                Console.WriteLine("Opponent surrended!");                
                 await StartGame();
             }
             else if(baseMessage.Type == NotificationTypes.WaitingForOpponentShips)
             {
+                Console.WriteLine(new string('=', 25));
                 Console.WriteLine("Waiting when opponent will place his ships");
             }
             else if(baseMessage.Type == NotificationTypes.Won)
             {
+                Console.WriteLine(new string('=', 25));
                 Console.WriteLine("Congratulations, you won");
             }
             else if(baseMessage.Type == NotificationTypes.Lost)
             {
+                Console.WriteLine(new string('=', 25));
                 Console.WriteLine("Loser, you just lost!");
             }
             else if(baseMessage.Type == NotificationTypes.YourMove)
             {
-                Console.WriteLine("Making move");
+                //Console.WriteLine("Making move");
                 await MakeMove();
             }
             else if(baseMessage.Type == NotificationTypes.OpponentMove)
             {
+                Console.WriteLine(new string('=', 25));
                 Console.WriteLine("Waiting while opponent will make his move");
             }
             else if(baseMessage.Type == NotificationTypes.MoveMade)
             {
-                Console.WriteLine("we are checking opponent move");                
+                //Console.WriteLine("we are checking opponent move");                
                 await CheckMove(JsonConvert.DeserializeObject<MoveCoordinates>(e.Message));
             }
             else if(baseMessage.Type == NotificationTypes.MoveChecked)
             {
-                Console.WriteLine("Our move was checked");
+                //Console.WriteLine("Our move was checked");
                await MoveChecked(JsonConvert.DeserializeObject<ShotResult>(e.Message));
             }
         }
@@ -79,7 +85,8 @@ namespace ConsoleClient.SocketClient
         
         private async void websocketClient_Opened(object sender, EventArgs e)
         {
-            Console.WriteLine("Client successfully connected.");
+            Console.WriteLine(new string('=', 25));            
+            Console.WriteLine("\nYou have been successfully connected to the server\n");
             await StartGame();
         }
 
